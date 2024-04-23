@@ -29,6 +29,26 @@ public class SimpleHost extends Host {
      */
     @Override
     protected void timerCancelled(int eventId) {
+        // TODO
+    }
 
+    /**
+     * @param destAddr destination address of host to send ping requests.
+     *
+     * @param interval amount of time to wait between sending ping requests.
+     * For example, if this is 10, then send a ping request to the destination address every 10 simulation time
+     * units (starting at time 10).
+     *
+     * @param duration total amount of time in which the host will send ping requests
+     * For example, if this is 35, then send pings until 35 simulation time units have passed.
+     *
+     * The sendPings method will be called at the beginning of a simulation when the simulation time is 0. Thus, an
+     * example of using sendPings with destAddr=5, interval=10, and duration=35. At simulation time 10,
+     * send ping request, at time 20, send ping request, at time 30 send ping request, at time 35 stop sending ping
+     * requests.
+     *      You may want to use timers for this – the Host class has methods to work with timers on your behalf.
+     */
+    public void sendPings(int destAddr, int interval, int duration) {
+        // TODO
     }
 }

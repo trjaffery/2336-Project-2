@@ -52,5 +52,12 @@ public class Message extends Event {
         return 0;
     }
 
-    public
+
+    // setNextHop: this method has two parameters: the destination Host instance, and the distance between source
+    // and destination host. This is used by the sendToNeighbor method in the Host class. To simplify things, we assume
+    // that 1 distance = 1 simulation time (ie, if two connected hosts are a distance of 5 from each other, it’ll take
+    // 5 simulation times units for a message to traverse from one to the other).
+    public void setNextHop(Host destination, int distance) {
+
+    }
 }

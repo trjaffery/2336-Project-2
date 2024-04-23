@@ -1,5 +1,19 @@
 public class LinkedEventList implements FutureEventList {
+    // doubly linked list
+    private Node head;
+    private Node next;
+    private Node prev;
+    private int size; // same as capacity
+    int simTime;
 
+
+    public LinkedEventList() {
+        this.head = null;
+        this.next = null;
+        this.prev = null;
+        this.size = 0;
+        this.simTime = 0;
+    }
 
     /**
      * Remove and return the Event at the front of the list.
@@ -34,7 +48,9 @@ public class LinkedEventList implements FutureEventList {
      */
     @Override
     public void insert(Event e) {
-
+        if (size == 0) {
+            this.head = e;
+        }
     }
 
     /**
@@ -44,7 +60,7 @@ public class LinkedEventList implements FutureEventList {
      */
     @Override
     public int size() {
-        return 0;
+        return this.size;
     }
 
     /**
@@ -54,7 +70,7 @@ public class LinkedEventList implements FutureEventList {
      */
     @Override
     public int capacity() {
-        return 0;
+        return this.size;
     }
 
     /**
@@ -64,6 +80,6 @@ public class LinkedEventList implements FutureEventList {
      */
     @Override
     public int getSimulationTime() {
-        return 0;
+        return simTime;
     }
 }
