@@ -1,16 +1,13 @@
 public class LinkedEventList implements FutureEventList {
     // doubly linked list
     private Node head;
-    private Node next;
-    private Node prev;
     private int size; // same as capacity
     int simTime;
 
 
     public LinkedEventList() {
         this.head = null;
-        this.next = null;
-        this.prev = null;
+
         this.size = 0;
         this.simTime = 0;
     }
@@ -25,7 +22,17 @@ public class LinkedEventList implements FutureEventList {
      */
     @Override
     public Event removeFirst() {
-        return null;
+        // if list is empty
+        if (this.size == 0) {
+            return null;
+        }
+        // if list has events
+        Event removedEvent = this.head.getEvent();
+        Node newHead = this.head.next;
+        this.head = newHead;
+        newHead.prev = null;
+        this.size--;
+        return removedEvent;
     }
 
     /**
@@ -36,6 +43,31 @@ public class LinkedEventList implements FutureEventList {
      */
     @Override
     public boolean remove(Event e) {
+        // if size is 0
+        if (this.size == 0) {
+            return false;
+        }
+        if (this.head.getEvent() == e) {
+            // node to remove is the first one
+            this.head = this.head.next;
+            this.head.prev = null;
+
+            this.size--;
+            return true;
+        }
+
+
+
+        Node transverse = this.head.next;
+        while (transverse != null) {
+            if (transverse.getEvent().equals(e)) {
+                transverse.prev.next = transverse.next;
+                transverse.next.prev = transverse.prev;
+                this.size--;
+                return true;
+            }
+            transverse = transverse.next;
+        }
         return false;
     }
 
@@ -48,8 +80,9 @@ public class LinkedEventList implements FutureEventList {
      */
     @Override
     public void insert(Event e) {
+        Node newNode = new Node(e);
         if (size == 0) {
-            this.head = e;
+            this.head = newNode;
         }
     }
 

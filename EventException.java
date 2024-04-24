@@ -1,5 +1,5 @@
-public class EventException extends Throwable {
+public class EventException extends RuntimeException {
     public EventException(String message) {
-
+        super(message);
     }
 }
