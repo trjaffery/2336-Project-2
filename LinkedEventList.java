@@ -81,9 +81,17 @@ public class LinkedEventList implements FutureEventList {
     @Override
     public void insert(Event e) {
         Node newNode = new Node(e);
-        if (size == 0) {
+        if (this.size == 0) {
             this.head = newNode;
+            return;
         }
+        Node transverse = this.head;
+        while (transverse != null) {
+            if (transverse.getEvent().arrivalTime > transverse.next.getEvent().arrivalTime) {
+
+            }
+        }
+
     }
 
     /**
