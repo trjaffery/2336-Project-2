@@ -2,7 +2,7 @@ public class LinkedEventList implements FutureEventList {
     // doubly linked list
     private Node head;
     private int size; // same as capacity
-    int simTime;
+    private int simTime;
 
 
     public LinkedEventList() {

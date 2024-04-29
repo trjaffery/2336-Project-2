@@ -12,7 +12,6 @@ public class Message extends Event {
         this.srcAddress = srcAddress;
         this.destAddress = destAddress;
         this.message = messageContent;
-        this.duration = duration;
     }
     /**f
      * Sets the insertion time and arrival time for this Event.
@@ -49,7 +48,7 @@ public class Message extends Event {
      */
     @Override
     public void handle() {
-        System.out.println("[" + getArrivalTime() + "ts] Host " + destAddress + ": Ping request from Host " + srcAddress);
+        //System.out.println("[" + getArrivalTime() + "ts] Host " + destAddress + ": Ping request from Host " + srcAddress);
         destinationHost.receive(this);
     }
 

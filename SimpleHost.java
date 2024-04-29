@@ -7,7 +7,8 @@ public class SimpleHost extends Host {
     private int durationTimer;
     private int duration;
     private int interval;
-    private int lastTimerCancelled;
+    private int lastCancelledTimer;
+    private int currentTime;
 
     public SimpleHost(int address, FutureEventList fel) {
         super();
@@ -23,14 +24,14 @@ public class SimpleHost extends Host {
     protected void receive(Message msg) {
         // Handle receiving a message
         // switch statement
-
+        int rtt = msg.getArrivalTime() - currentTime;
         if ("PING_REQUEST".equals(msg.getMessage())) {
             System.out.println("[" + getCurrentTime() + "ts] Host " + getHostAddress() + ": Ping request from Host " + msg.getSrcAddress());
             Message response = new Message(getHostAddress(), msg.getSrcAddress(), "PING_RESPONSE");
             response.setInsertionTime(getCurrentTime());
             sendToNeighbor(response);
         } else if ("PING_RESPONSE".equals(msg.getMessage())) {
-            System.out.println("[" + getCurrentTime() + "ts] Host " + getHostAddress() + ": Ping response from Host " + msg.getSrcAddress());
+            System.out.println("[" + getCurrentTime() + "ts] Host " + getHostAddress() + ": Ping response from Host " + msg.getSrcAddress() + " (RTT = " + rtt + "ts)");
         }
     }
 
@@ -44,29 +45,34 @@ public class SimpleHost extends Host {
     protected void timerExpired(int eventId) {
         // Timer expired handling logic
         // For example, you might send a new ping request if the timer corresponds to the ping interval
-        System.out.println("Timer " + eventId + ": expired");
-        if (eventId == intervalTimer && eventId != this.lastTimerCancelled) { // if the current intervalTimer expires
-            if (interval >= duration) { // if interval time reaches/exceeds the total duration time of simulation
-                cancelTimer(intervalTimer);
-                this.lastTimerCancelled = eventId;
-                System.out.println("[" + duration + "ts] Host " + getHostAddress() + ": stopped sending pings");
-                intervalTimer = durationTimer;
+
+        if (eventId == intervalTimer) { // if the current intervalTimer expires
+//            if (interval >= duration) { // if interval time reaches/exceeds the total duration time of simulation
+//                cancelTimer(intervalTimer);
+//                timerCancelled(intervalTimer);
+//                intervalTimer = durationTimer;
+//            }
+            this.currentTime = getCurrentTime();
+
+            if (this.currentTime <= duration) {
+                currentTime = getCurrentTime();
+                System.out.println("[" + getCurrentTime() + "ts] Host " + getHostAddress() + ": Sent ping to Host " + destAddr);
             }
-
             // create the message
-            Message request = new Message( getHostAddress(), destAddr, "Ping_Request");
+            Message request = new Message(getHostAddress(), destAddr, "PING_REQUEST");
 
-            //send the message
+            // send the message
             sendToNeighbor(request);
 
             // create new intervalTimer for next interval
             this.intervalTimer = newTimer(interval);
         }
-        else if (eventId == durationTimer && eventId != this.lastTimerCancelled) { // if the current durationTimer expires
-            cancelTimer(durationTimer);
-            timerCancelled(durationTimer);
-            this.lastTimerCancelled = eventId;
-            System.out.println("[" + duration + "ts] Host " + getHostAddress() + ": stopped sending pings");
+        else if (eventId == durationTimer && eventId != lastCancelledTimer) {
+            // if the current durationTimer expires
+            this.currentTime = getCurrentTime();
+            System.out.println("[" + duration + "ts] Host " + getHostAddress() + ": Stopped sending pings");
+            cancelTimer(durationTimer); // this line causes the exception
+            lastCancelledTimer = durationTimer;
         }
 
     }
@@ -80,7 +86,6 @@ public class SimpleHost extends Host {
     @Override
     protected void timerCancelled(int eventId) {
         // Timer cancelled handling logic
-
     }
 
 
