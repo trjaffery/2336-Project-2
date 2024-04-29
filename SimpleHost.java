@@ -1,4 +1,15 @@
+import java.util.HashMap;
+import java.util.List;
+
 public class SimpleHost extends Host {
+    private int destAddr;
+    private int pingTimerId;
+    private int stopTimerId;
+
+    public SimpleHost(int address, FutureEventList fel) {
+        super();
+        setHostParameters(address, fel);
+    }
 
     /**
      * This is called when a host receives a Message event from a neighboring host.
@@ -7,7 +18,18 @@ public class SimpleHost extends Host {
      */
     @Override
     protected void receive(Message msg) {
+        // Handle receiving a message
+        // switch statement
+        System.out.println("Host received: " + msg);
 
+        if ("PING_REQUEST".equals(msg.getMessage())) {
+            System.out.println("[" + getCurrentTime() + "ts] Host " + getHostAddress() + ": Ping request from Host " + msg.getSrcAddress());
+            Message response = new Message(getHostAddress(), msg.getSrcAddress(), "PING_RESPONSE");
+            response.setInsertionTime(getCurrentTime());
+            sendToNeighbor(response);
+        } else if ("PING_RESPONSE".equals(msg.getMessage())) {
+            System.out.println("[" + getCurrentTime() + "ts] Host " + getHostAddress() + ": Ping response from Host " + msg.getSrcAddress());
+        }
     }
 
     /**
@@ -18,6 +40,10 @@ public class SimpleHost extends Host {
      */
     @Override
     protected void timerExpired(int eventId) {
+        // Timer expired handling logic
+        // For example, you might send a new ping request if the timer corresponds to the ping interval
+        System.out.println("Host " + eventId + ": Stopped sending pings");
+        // create new timer
 
     }
 
@@ -29,26 +55,18 @@ public class SimpleHost extends Host {
      */
     @Override
     protected void timerCancelled(int eventId) {
-        // TODO
+        // Timer cancelled handling logic
+        // for the last timer, to stop making new timers
+        System.out.println("[" + getCurrentTime() + "ts] Timer " + eventId + " cancelled.");
     }
 
-    /**
-     * @param destAddr destination address of host to send ping requests.
-     *
-     * @param interval amount of time to wait between sending ping requests.
-     * For example, if this is 10, then send a ping request to the destination address every 10 simulation time
-     * units (starting at time 10).
-     *
-     * @param duration total amount of time in which the host will send ping requests
-     * For example, if this is 35, then send pings until 35 simulation time units have passed.
-     *
-     * The sendPings method will be called at the beginning of a simulation when the simulation time is 0. Thus, an
-     * example of using sendPings with destAddr=5, interval=10, and duration=35. At simulation time 10,
-     * send ping request, at time 20, send ping request, at time 30 send ping request, at time 35 stop sending ping
-     * requests.
-     *      You may want to use timers for this – the Host class has methods to work with timers on your behalf.
-     */
-    public void sendPings(int destAddr, int interval, int duration) {
-        // TODO
+
+    public void sendPings(int interval, int duration, int destAddr) {
+        this.destAddr = destAddr;
+        // Start the ping timer
+        pingTimerId = this.newTimer(interval);
+
+        // Start the stop timer to stop pinging after the duration
+        stopTimerId = this.newTimer(duration);
     }
 }

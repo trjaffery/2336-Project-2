@@ -22,15 +22,15 @@ public class LinkedEventList implements FutureEventList {
      */
     @Override
     public Event removeFirst() {
-        // if list is empty
         if (this.size == 0) {
             return null;
         }
-        // if list has events
         Event removedEvent = this.head.getEvent();
-        Node newHead = this.head.next;
-        this.head = newHead;
-        newHead.prev = null;
+        this.head = this.head.next;
+        if (this.head != null) {
+            this.head.prev = null;
+        }
+        simTime = removedEvent.getArrivalTime();
         this.size--;
         return removedEvent;
     }
@@ -43,30 +43,25 @@ public class LinkedEventList implements FutureEventList {
      */
     @Override
     public boolean remove(Event e) {
-        // if size is 0
         if (this.size == 0) {
             return false;
         }
-        if (this.head.getEvent() == e) {
-            // node to remove is the first one
-            this.head = this.head.next;
-            this.head.prev = null;
-
-            this.size--;
-            return true;
-        }
-
-
-
-        Node transverse = this.head.next;
-        while (transverse != null) {
-            if (transverse.getEvent().equals(e)) {
-                transverse.prev.next = transverse.next;
-                transverse.next.prev = transverse.prev;
+        Node current = this.head;
+        while (current != null) {
+            if (current.getEvent().equals(e)) {
+                if (current.prev != null) {
+                    current.prev.next = current.next;
+                } else {
+                    // If current is the head
+                    this.head = current.next;
+                }
+                if (current.next != null) {
+                    current.next.prev = current.prev;
+                }
                 this.size--;
                 return true;
             }
-            transverse = transverse.next;
+            current = current.next;
         }
         return false;
     }
@@ -81,17 +76,41 @@ public class LinkedEventList implements FutureEventList {
     @Override
     public void insert(Event e) {
         Node newNode = new Node(e);
-        if (this.size == 0) {
+        e.setInsertionTime(simTime);
+        if (this.head == null) {
+            // The list is empty, set head to the new node
+
             this.head = newNode;
+
+            this.size++;
             return;
         }
-        Node transverse = this.head;
-        while (transverse != null) {
-            if (transverse.getEvent().arrivalTime > transverse.next.getEvent().arrivalTime) {
 
-            }
+        Node current = this.head;
+
+        // Special case: Insert at the beginning if the new node's arrival time is the smallest
+        if (newNode.getEvent().arrivalTime < this.head.getEvent().arrivalTime) {
+            newNode.next = this.head;
+            this.head.prev = newNode;
+            this.head = newNode;
+            this.size++;
+            return;
         }
 
+        // Find the correct position for insertion (just before the first larger element)
+        while (current.next != null && current.next.getEvent().arrivalTime < e.arrivalTime) {
+            current = current.next;
+        }
+
+        // Insert new node after 'current' (could be in the middle or at the end)
+        newNode.next = current.next;
+        if (current.next != null) {
+            current.next.prev = newNode;
+        }
+        current.next = newNode;
+        newNode.prev = current;
+
+        this.size++;
     }
 
     /**
