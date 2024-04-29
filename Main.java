@@ -42,8 +42,7 @@ public class Main {
             int duration = scanner.nextInt();
 
             SimpleHost srcHost = hosts.get(srcAddress);
-            srcHost.sendPings(destAddress, interval, duration);
-
+            srcHost.sendPings(interval, duration, destAddress);
         }
 
         scanner.close();

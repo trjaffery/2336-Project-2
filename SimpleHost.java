@@ -3,8 +3,11 @@ import java.util.List;
 
 public class SimpleHost extends Host {
     private int destAddr;
-    private int pingTimerId;
-    private int stopTimerId;
+    private int intervalTimer;
+    private int durationTimer;
+    private int duration;
+    private int interval;
+    private int lastTimerCancelled;
 
     public SimpleHost(int address, FutureEventList fel) {
         super();
@@ -20,7 +23,6 @@ public class SimpleHost extends Host {
     protected void receive(Message msg) {
         // Handle receiving a message
         // switch statement
-        System.out.println("Host received: " + msg);
 
         if ("PING_REQUEST".equals(msg.getMessage())) {
             System.out.println("[" + getCurrentTime() + "ts] Host " + getHostAddress() + ": Ping request from Host " + msg.getSrcAddress());
@@ -42,8 +44,30 @@ public class SimpleHost extends Host {
     protected void timerExpired(int eventId) {
         // Timer expired handling logic
         // For example, you might send a new ping request if the timer corresponds to the ping interval
-        System.out.println("Host " + eventId + ": Stopped sending pings");
-        // create new timer
+        System.out.println("Timer " + eventId + ": expired");
+        if (eventId == intervalTimer && eventId != this.lastTimerCancelled) { // if the current intervalTimer expires
+            if (interval >= duration) { // if interval time reaches/exceeds the total duration time of simulation
+                cancelTimer(intervalTimer);
+                this.lastTimerCancelled = eventId;
+                System.out.println("[" + duration + "ts] Host " + getHostAddress() + ": stopped sending pings");
+                intervalTimer = durationTimer;
+            }
+
+            // create the message
+            Message request = new Message( getHostAddress(), destAddr, "Ping_Request");
+
+            //send the message
+            sendToNeighbor(request);
+
+            // create new intervalTimer for next interval
+            this.intervalTimer = newTimer(interval);
+        }
+        else if (eventId == durationTimer && eventId != this.lastTimerCancelled) { // if the current durationTimer expires
+            cancelTimer(durationTimer);
+            timerCancelled(durationTimer);
+            this.lastTimerCancelled = eventId;
+            System.out.println("[" + duration + "ts] Host " + getHostAddress() + ": stopped sending pings");
+        }
 
     }
 
@@ -56,17 +80,18 @@ public class SimpleHost extends Host {
     @Override
     protected void timerCancelled(int eventId) {
         // Timer cancelled handling logic
-        // for the last timer, to stop making new timers
-        System.out.println("[" + getCurrentTime() + "ts] Timer " + eventId + " cancelled.");
+
     }
 
 
     public void sendPings(int interval, int duration, int destAddr) {
         this.destAddr = destAddr;
+        this.interval = interval;
+        this.duration = duration;
         // Start the ping timer
-        pingTimerId = this.newTimer(interval);
+        this.intervalTimer = this.newTimer(interval);
 
         // Start the stop timer to stop pinging after the duration
-        stopTimerId = this.newTimer(duration);
+        this.durationTimer = this.newTimer(duration);
     }
 }

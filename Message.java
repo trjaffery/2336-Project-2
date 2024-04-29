@@ -3,7 +3,7 @@ public class Message extends Event {
     private String message;
     private int srcAddress;
     private Host destinationHost;
-    private int distanceToNextHop;
+    private int duration;
 
 
 
@@ -12,8 +12,9 @@ public class Message extends Event {
         this.srcAddress = srcAddress;
         this.destAddress = destAddress;
         this.message = messageContent;
+        this.duration = duration;
     }
-    /**
+    /**f
      * Sets the insertion time and arrival time for this Event.
      * <br>
      * It is assumed that any information needed to compute the arrival time from the insertion time is passed into
@@ -74,8 +75,8 @@ public class Message extends Event {
     // that 1 distance = 1 simulation time (ie, if two connected hosts are a distance of 5 from each other, it’ll take
     // 5 simulation times units for a message to traverse from one to the other).
     public void setNextHop(Host destination, int distance) {
-        this.destinationHost = destinationHost;
-        this.distanceToNextHop = distance;
+        this.destinationHost = destination;
+        this.duration = distance;
         // Recalculate the arrival time whenever the next hop is updated
         if (this.insertionTime >= 0) {
             setInsertionTime(this.insertionTime);

@@ -58,6 +58,7 @@ public class LinkedEventList implements FutureEventList {
                 if (current.next != null) {
                     current.next.prev = current.prev;
                 }
+                simTime = e.getArrivalTime();
                 this.size--;
                 return true;
             }
