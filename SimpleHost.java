@@ -71,9 +71,9 @@ public class SimpleHost extends Host {
             // if the current durationTimer expires
 
             System.out.println("[" + duration + "ts] Host " + getHostAddress() + ": Stopped sending pings");
-            // cancel all the interval timers and end program
+            // cancel interval timers and end program
             cancelTimer(intervalTimer);
-            //cancelTimer(durationTimer); // this line causes the exception
+
             lastCancelledTimer = intervalTimer;
         }
 
