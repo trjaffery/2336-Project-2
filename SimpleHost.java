@@ -69,10 +69,12 @@ public class SimpleHost extends Host {
         }
         else if (eventId == durationTimer && eventId != lastCancelledTimer) {
             // if the current durationTimer expires
-            this.currentTime = getCurrentTime();
+
             System.out.println("[" + duration + "ts] Host " + getHostAddress() + ": Stopped sending pings");
-            cancelTimer(durationTimer); // this line causes the exception
-            lastCancelledTimer = durationTimer;
+            // cancel all the interval timers and end program
+            cancelTimer(intervalTimer);
+            //cancelTimer(durationTimer); // this line causes the exception
+            lastCancelledTimer = intervalTimer;
         }
 
     }
